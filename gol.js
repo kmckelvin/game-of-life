@@ -27,7 +27,7 @@ const tick = (world, rules) => {
   return uniq(allCells, compareCells);
 };
 
-const twoOrThreeCellsLive = world =>
+const twoOrThreeLiveNeighborsStaysAlive = world =>
   world.reduce((acc, cell) => {
     const neighbors = getNeighbors(cell);
     const neighborCount = world.filter(c =>
@@ -39,7 +39,7 @@ const twoOrThreeCellsLive = world =>
     return acc;
   }, []);
 
-const threeNeighboringCellsLive = world =>
+const threeNeighboringCellsBorn = world =>
   world.reduce((acc, cell) => {
     const neighbors = getNeighbors(cell);
     const live = neighbors.filter(
@@ -77,8 +77,8 @@ describe("game of life", () => {
   it("plays a blinker", () => {
     const world = [Cell(1, 1), Cell(1, 2), Cell(1, 3)],
       tickedWorld = tick(world, [
-        twoOrThreeCellsLive,
-        threeNeighboringCellsLive
+        twoOrThreeLiveNeighborsStaysAlive,
+        threeNeighboringCellsBorn
       ]);
     assert.deepInclude(tickedWorld, Cell(0, 2));
     assert.deepInclude(tickedWorld, Cell(1, 2));
@@ -97,26 +97,26 @@ describe("compareCells", () => {
   });
 });
 
-describe("twoOrThreeCellsLive", () => {
+describe("twoOrThreeLiveNeighborsStaysAlive", () => {
   it("keeps a cell alive if it has two live neighbours", () => {
     const world = [Cell(1, 1), Cell(1, 2), Cell(1, 3)],
-      tickedWorld = twoOrThreeCellsLive(world);
+      tickedWorld = twoOrThreeLiveNeighborsStaysAlive(world);
 
     assert.deepEqual(tickedWorld, [Cell(1, 2)]);
   });
 
   it("keeps a cell alive if it has three live neighbours", () => {
     const world = [Cell(1, 1), Cell(1, 2), Cell(1, 3), Cell(2, 2)],
-      tickedWorld = twoOrThreeCellsLive(world);
+      tickedWorld = twoOrThreeLiveNeighborsStaysAlive(world);
 
     assert.deepEqual(tickedWorld, world);
   });
 });
 
-describe("threeNeighboringCellsLive", () => {
+describe("threeNeighboringCellsBorn", () => {
   it("brings a cell to life if it has three live neighbors", () => {
     const world = [Cell(1, 1), Cell(1, 2), Cell(1, 3)],
-      tickedWorld = threeNeighboringCellsLive(world);
+      tickedWorld = threeNeighboringCellsBorn(world);
 
     assert.deepEqual(uniq(tickedWorld, compareCells), [Cell(0, 2), Cell(2, 2)]);
   });
